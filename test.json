@@ -1,0 +1,65 @@
+[
+  {
+    "quantity": 4,
+    "product": {
+      "id": "65ccb8a494e71136c08efd77",
+      "title": "iPhone XII",
+      "description": "SIM-Free, Model A19211 6.5-inch Super Retina HD display with OLED technology A12 Bionic chip with ...",
+      "price": 899,
+      "discountPercentage": 17.94,
+      "rating": 5,
+      "stock": 34,
+      "brand": "samsung",
+      "category": "smartphones",
+      "thumbnail": "https://i.dummyjson.com/data/products/2/thumbnail.jpg",
+      "images": [
+        "https://i.dummyjson.com/data/products/2/1.jpg",
+        "https://i.dummyjson.com/data/products/2/2.jpg",
+        "https://i.dummyjson.com/data/products/2/3.jpg",
+        "https://i.dummyjson.com/data/products/2/thumbnail.jpg"
+      ],
+      "discountpercentage": null,
+      "deleted": true
+    },
+    "user": {
+      "email": "farooqahsan72@gmail.com",
+      "password": "Test@123",
+      "role": "user",
+      "addresses": [],
+      "orders": [],
+      "id": "65cdebbf235014e618857e8d"
+    },
+    "id": "65ce3fc129f48a3f094cb963"
+  },
+  {
+    "quantity": 4,
+    "product": {
+      "deleted": false,
+      "id": "65ccb8a494e71136c08efd80",
+      "title": "perfume Oil",
+      "description": "Mega Discount, Impression of Acqua Di Gio by GiorgioArmani concentrated attar perfume Oil",
+      "price": 13,
+      "discountPercentage": 8.4,
+      "rating": 4.26,
+      "stock": 65,
+      "brand": "Impression of Acqua Di Gio",
+      "category": "fragrances",
+      "thumbnail": "https://i.dummyjson.com/data/products/11/thumbnail.jpg",
+      "images": [
+        "https://i.dummyjson.com/data/products/11/1.jpg",
+        "https://i.dummyjson.com/data/products/11/2.jpg",
+        "https://i.dummyjson.com/data/products/11/3.jpg",
+        "https://i.dummyjson.com/data/products/11/thumbnail.jpg"
+      ]
+    },
+    "user": {
+      "email": "farooqahsan72@gmail.com",
+      "password": "Test@123",
+      "role": "user",
+      "addresses": [],
+      "orders": [],
+      "id": "65cdebbf235014e618857e8d"
+    },
+    "id": "65ce40bc29f48a3f094cb965"
+  }
+]
