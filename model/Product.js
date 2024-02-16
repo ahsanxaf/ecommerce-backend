@@ -15,7 +15,6 @@ const productSchema = new Schema({
     deleted: {type: Boolean, default: false},
 });
 
-
 const virtual = productSchema.virtual('id');
 virtual.get(function(){
     return this._id;

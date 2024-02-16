@@ -4,7 +4,7 @@ exports.createUser = async (req, res) => {
   const user = new User(req.body);
   try {
     const doc = await user.save();
-    res.status(201).json(doc);
+    res.status(201).json({id:doc.id, role:doc.role});
   } catch (error) {
     res.status(400).json(error);
   }
@@ -17,7 +17,7 @@ exports.loginUser = async (req, res) => {
       res.status(401).json({ message: "Email or Password is incorrect" });
     } else if (user.password === req.body.password) {
       // TODO: we will make addresses independent of login
-      res.status(201).json({id: user.id, email: user.email, name: user.name, addresses: user.addresses});
+      res.status(201).json({id: user.id, role: user.role});
     } else {
       res.status(401).json({ message: "Email or Password is incorrect" });
     }
