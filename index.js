@@ -8,6 +8,7 @@ const cors = require('cors');
 const usersRouter = require('./routes/Users');
 const authRouter = require('./routes/Auth');
 const cartRouter = require('./routes/Carts');
+const orderRouter = require('./routes/Orders');
 
 // middlewares
 server.use(cors({
@@ -20,6 +21,7 @@ server.use('/categories', categoriesRouter.router)
 server.use('/users', usersRouter.router)
 server.use('/auth', authRouter.router)
 server.use('/cart', cartRouter.router)
+server.use('/orders', orderRouter.router)
 
 main().catch(error=>console.log(error));
 
