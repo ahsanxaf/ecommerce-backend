@@ -21,6 +21,7 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 var jwt = require("jsonwebtoken");
 const cookieParser = require('cookie-parser');
 const stripe = require("stripe")(process.env.STRIPE_SERVER_KEY);
+const path = require('path');
 
 // console.log(process.env)
 
@@ -65,7 +66,7 @@ opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey = process.env.JWT_SECRET_KEY; // TODO: should not be in code
 
 // middlewares
-server.use(express.static('build'));
+server.use(express.static(path.resolve(__dirname, 'build')));
 server.use(cookieParser());
 server.use(
   session({
