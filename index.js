@@ -22,6 +22,7 @@ var jwt = require("jsonwebtoken");
 const cookieParser = require('cookie-parser');
 const stripe = require("stripe")(process.env.STRIPE_SERVER_KEY);
 const path = require('path');
+const { Order } = require("./model/Order");
 
 // console.log(process.env)
 
@@ -31,7 +32,7 @@ const path = require('path');
 // TODO: we will capture actual order after deploying on live server
 const endpointSecret = process.env.ENDPOINT_SECRET;
 
-server.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
+server.post('/webhook', express.raw({type: 'application/json'}), async(request, response) => {
   const sig = request.headers['stripe-signature'];
 
   let event;
@@ -47,8 +48,9 @@ server.post('/webhook', express.raw({type: 'application/json'}), (request, respo
   switch (event.type) {
     case 'payment_intent.succeeded':
       const paymentIntentSucceeded = event.data.object;
-      console.log({paymentIntentSucceeded})
-      // Then define and call a function to handle the event payment_intent.succeeded
+      const order = await Order.findById(paymentIntentSucceeded.metadata.orderId);
+      order.paymentStatus = 'recieved';
+      await order.save();
       break;
     // ... handle other event types
     default:
@@ -90,6 +92,11 @@ server.use("/users", isAuth(), usersRouter.router);
 server.use("/auth", authRouter.router);
 server.use("/cart", isAuth(), cartRouter.router);
 server.use("/orders", isAuth(), orderRouter.router);
+
+// this line we add to make react router work in case of other routes doesnt match
+server.get('*', (req, res) =>
+  res.sendFile(path.resolve('build', 'index.html'))
+);
 
 // passport stratigies
 passport.use(
@@ -161,16 +168,19 @@ passport.deserializeUser(function (user, cb) {
 
 // payments
 server.post("/create-payment-intent", async (req, res) => {
-  const { totalAmount } = req.body;
+  const { totalAmount, orderId } = req.body;
 
-  // Create a PaymentIntent with the order amount and currency
   const paymentIntent = await stripe.paymentIntents.create({
     amount: totalAmount*100,
     currency: "usd",
-    // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
     automatic_payment_methods: {
       enabled: true,
     },
+    metadata: {
+      orderId
+      // this info will go to stripe => and then to webhook
+      // so that we can conslude that payment was successfull, even if client closes window after pay
+    }
   });
 
   res.send({
@@ -193,6 +203,3 @@ server.get("/", (req, res) => {
 server.listen(process.env.PORT, () => {
   console.log("Server Started");
 });
-
-
-// whsec_e0eb7f95ac7f8ba7109b4b2277bc3d97a5a1530d26b2f821d3302e3ccf82d6db 
