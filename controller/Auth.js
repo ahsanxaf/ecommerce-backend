@@ -1,6 +1,6 @@
 const { User } = require("../model/User");
 const crypto = require("crypto");
-const { sanitizeUser } = require("../services/common");
+const { sanitizeUser, sendMail, resetPasswordTemplate } = require("../services/common");
 var jwt = require("jsonwebtoken");
 
 exports.createUser = async (req, res) => {
@@ -19,7 +19,10 @@ exports.createUser = async (req, res) => {
           if (err) {
             res.status(400).json(err);
           } else {
-            const token = jwt.sign(sanitizeUser(doc), process.env.JWT_SECRET_KEY);
+            const token = jwt.sign(
+              sanitizeUser(doc),
+              process.env.JWT_SECRET_KEY
+            );
             res
               .cookie("jwt", token, {
                 expires: new Date(Date.now() + 3600000),
@@ -44,7 +47,16 @@ exports.loginUser = async (req, res) => {
       httpOnly: true,
     })
     .status(201)
-    .json({id: user.id, role: user.role, token: user.token});
+    .json({ id: user.id, role: user.role, token: user.token });
+};
+
+exports.logout = async (req, res) => {
+  res
+    .cookie("jwt", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    })
+    .sendStatus(200);
 };
 
 exports.checkAuth = async (req, res) => {
@@ -52,5 +64,56 @@ exports.checkAuth = async (req, res) => {
     res.json(req.user);
   } else {
     res.sendStatus(401);
+  }
+};
+
+exports.resetPasswordRequest = async (req, res) => {
+  const email = req.body.email;
+  const user = await User.findOne({ email: email });
+  if (user) {
+    const token = crypto.randomBytes(48).toString("hex");
+    user.resetPasswordToken = token;
+    await user.save();
+    const resetPageLink =
+      "https://smile-store.vercel.app/reset-password?token=" + token + "&email=" + email;
+    const subject = "Password Reset Request";
+    if (email) {
+      const response = await sendMail({ to: email, subject, html: resetPasswordTemplate(resetPageLink) });
+      res.json(response);
+    } else {
+      res.sendStatus(400);
+    }
+  } else {
+    res.sendStatus(400);
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  const { email, password, token } = req.body;
+  const user = await User.findOne({ email: email, resetPasswordToken: token });
+  if (user) {
+    const salt = crypto.randomBytes(16);
+    crypto.pbkdf2(
+      password,
+      salt,
+      310000,
+      32,
+      "sha256",
+      async function (err, hashedPassword) {
+        user.password = hashedPassword;
+        user.salt = salt;
+        await user.save();
+        const subject = "Security Alert";
+        const html = `<p>Your password has been reset successfully</p>`;
+        if (email) {
+          const response = await sendMail({ to: email, subject, html });
+          res.json(response);
+        } else {
+          res.sendStatus(400);
+        }
+      }
+    );
+  } else {
+    res.sendStatus(400);
   }
 };

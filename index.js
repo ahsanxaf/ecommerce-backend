@@ -24,9 +24,6 @@ const stripe = require("stripe")(process.env.STRIPE_SERVER_KEY);
 const path = require('path');
 const { Order } = require("./model/Order");
 
-// console.log(process.env)
-
-
 //webhook
 
 // TODO: we will capture actual order after deploying on live server
@@ -92,6 +89,10 @@ server.use("/users", isAuth(), usersRouter.router);
 server.use("/auth", authRouter.router);
 server.use("/cart", isAuth(), cartRouter.router);
 server.use("/orders", isAuth(), orderRouter.router);
+
+
+
+
 
 // this line we add to make react router work in case of other routes doesnt match
 server.get('*', (req, res) =>
